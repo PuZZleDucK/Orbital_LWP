@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- /*
+ * Orbital Live Wallpaper
+ *
+ * Copyright (C) 2012 PuZZleDucK (PuZZleDucK@gmail.com)
+ * 
+ *	This program is free software; you can redistribute it and/or
+ *	modify it under the terms of the GNU General Public License version
+ *	3 as published by the Free Software Foundation.
+ *
+ * This live wallpaper was originally based on the target live wallpaper by PuZZleDucK
+ *
+ */ -->
+ 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/configWallpaperButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Configure wallpaper settings" />
+
+    <Button
+        android:id="@+id/configOrbitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Configure orbital settings" />
+
+    <Button
+        android:id="@+id/appsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="PuZZleDucK on Google Play" />
+
+
+    <Button
+        android:id="@+id/githubButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Orbital LWP on GitHub" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+            
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="main_text"
+        android:textSize="16sp" />
+
+            
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/contactDevButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Contact PuZZleDucK" />
+            
+
+</LinearLayout>

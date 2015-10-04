@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- /*
+ * Orbital Live Wallpaper
+ *
+ * Copyright (C) 2012 PuZZleDucK (PuZZleDucK@gmail.com)
+ * 
+ *	This program is free software; you can redistribute it and/or
+ *	modify it under the terms of the GNU General Public License version
+ *	3 as published by the Free Software Foundation.
+ *
+ * This live wallpaper was originally based on the target live wallpaper by PuZZleDucK
+ *
+ */ -->
+
+<PreferenceScreen 
+    android:key="orbital_wallpaper_settings" 
+    android:title="settings_title"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:key="orbit_category"
+        android:title="Orbit Preferences"
+        android:summary="Orbit Preferences summary">
+
+
+
+        <ListPreference
+            android:key="orbit_type"
+            android:title="ListPreference title"
+            android:summary="ListPreference summary"
+            android:entries="@array/orbit_types"
+            android:entryValues="@array/orbit_types_values" />
+
+
+        <ListPreference
+            android:key="orbit_speed"
+            android:title="speed selector title"
+            android:summary="speed summary"
+            android:entries="@array/speed_types"
+            android:entryValues="@array/speed_types_values"
+            android:defaultValue="" />
+
+        <ListPreference
+            android:key="orbit_direction"
+            android:title="direction selector title"
+            android:summary="direction summary"
+            android:entries="@array/direction_types"
+            android:entryValues="@array/direction_types_values"
+            android:defaultValue="" />
+
+    </PreferenceCategory>
+
+
+
+    <PreferenceCategory
+        android:key="dot_category"
+        android:title="Dot Preferences"
+        android:summary="Dot Preferences summary">
+
+
+        <ListPreference
+            android:key="dot_color"
+            android:title="color selector title"
+            android:summary="color summary"
+            android:entries="@array/color_types"
+            android:entryValues="@array/color_types_values"
+            android:defaultValue="" />
+
+
+        <ListPreference
+            android:key="fixed_dot_size"
+            android:title="size selector title"
+            android:summary="size summary"
+            android:entries="@array/size_types"
+            android:entryValues="@array/size_types_values"
+            android:defaultValue="" />
+
+        <ListPreference
+            android:key="fixed_dot_count"
+            android:title="count selector title"
+            android:summary="count summary"
+            android:entries="@array/count_types"
+            android:entryValues="@array/count_types_values"
+            android:defaultValue="" />
+
+    </PreferenceCategory>
+
+
+
+
+    <PreferenceCategory
+        android:key="transition_category"
+        android:title="Transition Preferences"
+        android:summary="Transition Preferences summary">
+
+        <ListPreference
+            android:key="fixed_transitions"
+            android:title="transition selector title"
+            android:summary="transition summary"
+            android:entries="@array/transition_types"
+            android:entryValues="@array/transition_types_values"
+            android:defaultValue="" />
+
+        <ListPreference
+            android:key="fixed_transition_speed"
+            android:title="transition speed selector title"
+            android:summary="transition speed summary"
+            android:entries="@array/transition_speed_types"
+            android:entryValues="@array/transition_speed_types_values"
+            android:defaultValue="" />
+
+    </PreferenceCategory>
+
+
+    <!--
+    <ListPreference android:entries="@array/target_animatenames" android:entryValues="@array/target_animatevalues" android:key="target_disc_type" android:title="@string/target_settings_disctype_title" android:summary="@string/target_settings_disctype_summary"></ListPreference>
+     -->
+
+
+    
+</PreferenceScreen>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="orbit_types">
+        <item>Random</item>
+        <item>Trefoil Knot</item>
+        <item>Double Trefoil Knot</item>
+        <item>Simple 3 groups</item>
+        <item>Simple 4 groups</item>
+        <item>Simple 5 groups</item>
+        <item>Chasing</item>
+    </string-array>
+
+    <string-array name="orbit_types_values">
+        <item>Random</item>
+        <item>Trefoil</item>
+        <item>Trefoil2</item>
+        <item>Simple3</item>
+        <item>Simple4</item>
+        <item>Simple5</item>
+        <item>Chasing</item>
+    </string-array>
+
+
+    <string-array name="speed_types">
+        <item>Random</item>
+        <item>Fast</item>
+        <item>Medium</item>
+        <item>Slow</item>
+    </string-array>
+
+    <string-array name="speed_types_values">
+        <item>Random</item>
+        <item>Fast</item>
+        <item>Medium</item>
+        <item>Slow</item>
+    </string-array>
+
+
+    <string-array name="direction_types">
+        <item>Random</item>
+        <item>Clockwise</item>
+        <item>Anticlockwise</item>
+    </string-array>
+
+    <string-array name="direction_types_values">
+        <item>Random</item>
+        <item>Clockwise</item>
+        <item>Anticlockwise</item>
+    </string-array>
+
+    <string-array name="color_types">
+        <item>Random</item>
+        <item>White</item>
+        <item>XDA</item>
+        <item>Cyanogen</item>
+        <item>FireFox</item>
+        <item>Apache</item>
+        <item>SlashDot</item>
+        <item>Ubuntu1</item>
+        <item>Cyanogen</item>
+        <item>Cherry</item>
+        <item>Ubuntu2</item>
+    </string-array>
+
+    <string-array name="color_types_values">
+        <item>Random</item>
+        <item>White</item>
+        <item>XDA</item>
+        <item>Cyanogen</item>
+        <item>FireFox</item>
+        <item>Apache</item>
+        <item>SlashDot</item>
+        <item>Ubuntu1</item>
+        <item>Cyanogen</item>
+        <item>Cherry</item>
+        <item>Ubuntu2</item>
+    </string-array>
+
+
+    <string-array name="size_types">
+        <item>Random</item>
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+    </string-array>
+
+    <string-array name="size_types_values">
+        <item>Random</item>
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+    </string-array>
+
+
+    <string-array name="count_types">
+        <item>Random</item>
+        <item>Few</item>
+        <item>Medium</item>
+        <item>Many</item>
+    </string-array>
+
+    <string-array name="count_types_values">
+        <item>Random</item>
+        <item>Few</item>
+        <item>Medium</item>
+        <item>Many</item>
+    </string-array>
+
+
+    <string-array name="transition_types">
+        <item>Random</item>
+        <item>In</item>
+        <item>Out</item>
+    </string-array>
+
+    <string-array name="transition_types_values">
+        <item>Random</item>
+        <item>In</item>
+        <item>Out</item>
+    </string-array>
+
+
+    <string-array name="transition_speed_types">
+        <item>Random</item>
+        <item>Fast</item>
+        <item>Medium</item>
+        <item>Slow</item>
+    </string-array>
+
+    <string-array name="transition_speed_types_values">
+        <item>Random</item>
+        <item>Fast</item>
+        <item>Medium</item>
+        <item>Slow</item>
+    </string-array>
+
+
+</resources>
