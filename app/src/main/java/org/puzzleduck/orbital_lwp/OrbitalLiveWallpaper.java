@@ -13,7 +13,6 @@
 
 package org.puzzleduck.orbital_lwp;
 
-import java.util.Random;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -25,25 +24,21 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
-import android.graphics.*;
-import android.util.*;
+
+import java.util.Random;
 
 public class OrbitalLiveWallpaper extends WallpaperService {
 
 	protected static final String SHARED_PREFS_NAME = "orbital_lwp_settings";
+    private static final boolean DEBUG = false;
 
-    private static final boolean DEBUG = true;
- 
-    private static float mTouchX = -1;
-    private static float mTouchY = -1;
-
-	public static int ORBIT_6_KNOT = 0;
-	public static int ORBIT_4_KNOT = 1;
-	public static int ORBIT_4_SIMPLE = 2;
-	public static int ORBIT_3_SIMPLE = 3;
-	public static int ORBIT_5_SIMPLE = 4;
-	public static int ORBIT_8 = 5;
-	public static String[] orbitNames = {"Trefoil","Trefoil2","Simple3","Simple4","Simple5","Chasing"};
+    private static final int ORBIT_6_KNOT = 0;
+    private static final int ORBIT_4_KNOT = 1;
+    private static final int ORBIT_4_SIMPLE = 2;
+    private static final int ORBIT_3_SIMPLE = 3;
+    private static final int ORBIT_5_SIMPLE = 4;
+    private static final int ORBIT_8 = 5;
+    private static String[] orbitNames = {"Trefoil","Trefoil2","Simple3","Simple4","Simple5","Chasing"};
 	private float[][] orbitSpeeds = {
 		{0.03f,0.05f,0.07f},//6knot
 		{0.03f,0.1f,0.2f}, //4knot
@@ -51,42 +46,70 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 		{0.1f,0.2f,0.3f}, //3simple
 		{0.1f,0.3f,0.5f}, //5simple
 		{0.05f,0.1f,0.2f} };//win8
-	public int[][] orbitalCounts = {
+    private int[][] orbitalCounts = {
 		{3,5,6},//6
 		{3,6,8},//4
 		{3,5,7},//4s
 		{3,5,7},//3s`
 		{2,3,4},//5
 		{3,5,6}};//8
-	public static String orbitType = "Random";
-	public static int orbitTypeIndex = 6;
-	public int[][] dotSizes = {
+//	public static String orbitType = "Random";
+    private int[][] dotSizes = {
 		{1,1,1},//6
 		{2,4,5},//4
 		{2,4,5},//4$
 		{2,4,5},//3$
 		{2,3,4},//5
 		{2,2,3}};//8
-	
-	public static int TRANSITION_NO_TRANSITION = -1;
-	public static int TRANSITION_SPIN_IN = 0;
-	public static int TRANSITION_SPIN_OUT = 1;
-	public static int TRANSITION_HALT_AT_12 = 2;
-	public static int TRANSITION_HALT_AT_CLOSEST = 3;
-	public static String[] transitionNames = {"no transition","Spin in","Spin out"};//,"Halt at 12","Halt at edge"};
-	public static int transitionCount = transitionNames.length-1;
-	//new split transitions
-	public static int currentTransitionAway = TRANSITION_NO_TRANSITION;//spin away to Centre
-	public static int currentTransitionBack = TRANSITION_NO_TRANSITION;//spin back from outside
 
-	public static int orbitRadius = 100;
-	public static int orbitDiameter = orbitRadius * 2;
-	public static float offset;
-	
-	public static int width = -1;
-	public static int height = -1;
-    
-    @Override
+    private static int TRANS_NO_TRANS = -1;
+    private static int TRANS_SPIN_IN = 0;
+    private static int TRANS_SPIN_OUT = 1;
+    private static int TRANS_HALT_AT_12 = 2;
+    private static int TRANS_HALT_AT_CLOSEST = 3;
+    private static String[] transitionNames = {"no transition","Spin in","Spin out"};//,"Halt at 12","Halt at edge"};
+
+    private static int orbitRadius = 100;
+    private static int orbitDiameter = orbitRadius * 2;
+    private static float offset;
+    private float orbitalCompression = 0.125f;//2.5f * orbitSpeed;
+    private int orbitalCount = 0;
+    private float dotSizeIncrement = 1.0f;
+    private int trailCount = 6;
+    private int setCount = 3;
+    private int defaultRadius = 100;
+    private int offScreenRadius = 1200;
+    private int fastSpeed = 20;
+    private int slowSpeed = 7;
+    int speedIndex = 0;
+    int dotSize = 3;
+
+    private int dotColor = Color.WHITE;
+	private int currentScheme = 0;
+	private int colorSchemes[][] = {
+			{ Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255)},//white
+			{ Color.argb(255,195,160,20), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,255,255,255)},//xda
+			{ Color.argb(255,98,215,230), Color.argb(255,150,195,200), Color.argb(255,98,215,230), Color.argb(255,60,170,180), Color.argb(255,98,215,230), Color.argb(255,255,255,255)},//cyanogen
+			{ Color.argb(255,220,115,20), Color.argb(255,220,115,20), Color.argb(255,90,175,200), Color.argb(255,250,245,10), Color.argb(255,220,115,20), Color.argb(255,5,40,90)},//fire Fox
+			//	{ Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,)},//w
+			{ Color.argb(255,220,200,20), Color.argb(255,80,30,120), Color.argb(255,160,50,200), Color.argb(255,190,50,150), Color.argb(255,230,10,30), Color.argb(255,240,50,5)},//Apache
+			{ Color.argb(255,255,255,255), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124)},//slash.
+			{ Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,255,181,21), Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,255,181,21)},//ubuntu classic
+			{ Color.argb(255,130,230,255), Color.argb(255,130,230,255), Color.argb(255,100,200,255), Color.argb(255,100,200,255), Color.argb(255,160,260,255), Color.argb(255,160,260,255)},//cy-gen
+			{ Color.argb(255,255,0,255), Color.argb(255,255,0,90), Color.argb(255,255,0,90), Color.argb(255,255,0,255), Color.argb(255,255,0,90), Color.argb(255,255,0,255)},//ferretcheery
+			{ Color.argb(255,101,16,89), Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,101,16,89), Color.argb(255,255,99,9), Color.argb(255,201,0,22) }//Ubuntu purple
+	};
+//		private String[] colorSchemeNames = {"White","XDA","Cyanogen","FireFox","Apache","/.","Ubuntu1","Cyanogen","Cherry","Ubuntu2"};
+
+    private static float mTouchX, mTouchY = -1;
+    private static int width, height = -1;
+    private static int orbitTypeIndex = 5;
+    private static int currentTransAway = TRANS_NO_TRANS;//spin away to Centre
+    private static int currentTransBack = TRANS_NO_TRANS;//spin back from outside
+    private float now = 0;
+    private float orbitSpeed = 0.1f;
+
+	@Override
     public Engine onCreateEngine() {
         return new TargetEngine();
     }
@@ -101,44 +124,8 @@ public class OrbitalLiveWallpaper extends WallpaperService {
             }
         };
         private boolean mVisible;
-        
-		private float now = 0;
-		private int dotColor = Color.WHITE;
-		private int currentScheme = 0;
-		private int colorSchemes[][] = { 
-			{ Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255)},//white
-			{ Color.argb(255,195,160,20), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,255,255,255)},//xda
-			{ Color.argb(255,98,215,230), Color.argb(255,150,195,200), Color.argb(255,98,215,230), Color.argb(255,60,170,180), Color.argb(255,98,215,230), Color.argb(255,255,255,255)},//cyanogen
-			{ Color.argb(255,220,115,20), Color.argb(255,220,115,20), Color.argb(255,90,175,200), Color.argb(255,250,245,10), Color.argb(255,220,115,20), Color.argb(255,5,40,90)},//fire Fox
-		//	{ Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,)},//w
-			{ Color.argb(255,220,200,20), Color.argb(255,80,30,120), Color.argb(255,160,50,200), Color.argb(255,190,50,150), Color.argb(255,230,10,30), Color.argb(255,240,50,5)},//Apache
-			{ Color.argb(255,255,255,255), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124)},//slash.
-			{ Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,255,181,21), Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,255,181,21)},//ubuntu classic
-			{ Color.argb(255,130,230,255), Color.argb(255,130,230,255), Color.argb(255,100,200,255), Color.argb(255,100,200,255), Color.argb(255,160,260,255), Color.argb(255,160,260,255)},//cy-gen
-			{ Color.argb(255,255,0,255), Color.argb(255,255,0,90), Color.argb(255,255,0,90), Color.argb(255,255,0,255), Color.argb(255,255,0,90), Color.argb(255,255,0,255)},//ferretcheery
-			{ Color.argb(255,101,16,89), Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,101,16,89), Color.argb(255,255,99,9), Color.argb(255,201,0,22) }//Ubuntu purple
-		};
-//		private String[] colorSchemeNames = {"White","XDA","Cyanogen","FireFox","Apache","/.","Ubuntu1","Cyanogen","Cherry","Ubuntu2"};
-	
-		private float orbitSpeed = 0.1f;//start average screen
-
-		private float orbitalCompression = 0.125f;//2.5f * orbitSpeed;
-		private int orbitalCount = 0;
-		private float dotSizeIncrement = 1.0f;
-		
-		private int trailCount = 6;
-		private int setCount = 3;
-		
-		private int defaultRadius = 100;
-		private int offScreenRadius = 1200;
-		private int fastSpeed = 20;
-		private int slowSpeed = 7;
-		int speedIndex = 0;
-		int dotSize = 3;
-
 		private Random rng = new Random();
-		
-        
+
         TargetEngine() {
             mPaint.setAntiAlias(true);
             mPaint.setStrokeWidth(2);
@@ -150,7 +137,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
             setTouchEventsEnabled(true);
-           
+
 		    setWindowProperties();
 			rng.setSeed(SystemClock.elapsedRealtime());
         }
@@ -222,12 +209,12 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 		
         @Override
         public void onTouchEvent(MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_MOVE) {
+//            if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 mTouchX = event.getX();
                 mTouchY = event.getY();
-            } 
+//            }
 	
-			if(	currentTransitionAway == TRANSITION_NO_TRANSITION && currentTransitionBack == TRANSITION_NO_TRANSITION)
+			if(	currentTransAway == TRANS_NO_TRANS && currentTransBack == TRANS_NO_TRANS)
 			{
 				triggerNewTransitionAway();
 			}
@@ -238,13 +225,13 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 		{
             switch(OrbitalLiveWallpaperSettings.transitionType){
                 case "Random":
-                    currentTransitionAway = rng.nextInt(2); // rng.nextInt(transitionCount);
+                    currentTransAway = rng.nextInt(2); // rng.nextInt(transitionCount);
                     break;
                 case "In":
-                    currentTransitionAway = 0;
+                    currentTransAway = 0;
                     break;
                 case "Out":
-                    currentTransitionAway = 1;
+                    currentTransAway = 1;
                     break;
                 default:
                     break;
@@ -260,24 +247,24 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
             switch(OrbitalLiveWallpaperSettings.transitionType){
                 case "Random":
-                    currentTransitionBack = rng.nextInt(2); // rng.nextInt(transitionCount);
+                    currentTransBack = rng.nextInt(2); // rng.nextInt(transitionCount);
                     break;
                 case "In":
-                    currentTransitionBack = 0;
+                    currentTransBack = 0;
                     break;
                 case "Out":
-                    currentTransitionBack = 1;
+                    currentTransBack = 1;
                     break;
                 default:
                     break;
             }
 
-			if(currentTransitionBack == TRANSITION_SPIN_IN)
+			if(currentTransBack == TRANS_SPIN_IN)
 			{
 				orbitRadius = offScreenRadius;
 			}
 
-			if(currentTransitionBack == TRANSITION_SPIN_OUT)
+			if(currentTransBack == TRANS_SPIN_OUT)
 			{
 				orbitRadius = 0;
 			}
@@ -320,8 +307,8 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 				mPaint.setTextSize(24);
 				mPaint.setColor(Color.WHITE);
 				c.drawText("debug now; " + now, 30, height - 460, mPaint);
-				c.drawText("      Trans away: " + transitionNames[currentTransitionAway+1], 30,height-430,mPaint);
-				c.drawText("      Trans back: " + transitionNames[currentTransitionBack+1], 30,height-400,mPaint);
+				c.drawText("      Trans away: " + transitionNames[currentTransAway +1], 30,height-430,mPaint);
+				c.drawText("      Trans back: " + transitionNames[currentTransBack +1], 30,height-400,mPaint);
 				
 				c.drawText("      Radius : " + orbitRadius, 30,height-380,mPaint);
 				c.drawText("      Default: " + defaultRadius, 30,height-360,mPaint);
@@ -330,7 +317,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 				c.drawText("      a.o < d: " + (Math.abs(orbitRadius) < defaultRadius) , 30,height-300,mPaint);
 				
 
-				c.drawText("      orbit: " + orbitType + "("+orbitTypeIndex+")" , 30,height-270,mPaint);
+				c.drawText("      orbit: " + indexToType(orbitTypeIndex) + "("+orbitTypeIndex+")" , 30,height-270,mPaint);
 				c.drawText("      speed: " +  orbitSpeed, 30,height-240,mPaint);
 				c.drawText("      count: " +  setCount +"/"+trailCount, 30,height-210,mPaint);
 				c.drawText("      offset 1: " +  offset, 30,height-180,mPaint);
@@ -343,85 +330,85 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
 			dotColor = 0;
 
-			if(orbitRadius <= 0 && currentTransitionAway == TRANSITION_SPIN_IN)
+			if(orbitRadius <= 0 && currentTransAway == TRANS_SPIN_IN)
 			{
 				triggerNewTransitionBack();
 			}// rad = 0 or off;
 			
-			if(orbitRadius > offScreenRadius && currentTransitionAway == TRANSITION_SPIN_OUT)
+			if(orbitRadius > offScreenRadius && currentTransAway == TRANS_SPIN_OUT)
 			{
 				triggerNewTransitionBack();
 			}// rad = 0 or off;
 			
-			if(currentTransitionAway == TRANSITION_SPIN_OUT )
+			if(currentTransAway == TRANS_SPIN_OUT)
 			{
 				orbitRadius += fastSpeed;
 				orbitDiameter = orbitRadius*2;
 			}
 
-			if(currentTransitionAway == TRANSITION_SPIN_IN )
+			if(currentTransAway == TRANS_SPIN_IN)
 			{
 				orbitRadius -= slowSpeed;
 				orbitDiameter = orbitRadius*2;
 			}
 			
-			if(currentTransitionBack == TRANSITION_SPIN_OUT )
+			if(currentTransBack == TRANS_SPIN_OUT)
 			{
 				orbitRadius += slowSpeed ;
 				orbitDiameter = orbitRadius*2;
 			}
 
-			if(currentTransitionBack == TRANSITION_SPIN_IN )
+			if(currentTransBack == TRANS_SPIN_IN)
 			{
 				orbitRadius -= fastSpeed ;
 				orbitDiameter = orbitRadius*2;
 			}
 
-			if( (Math.abs(orbitRadius) > offScreenRadius) && (currentTransitionAway == TRANSITION_SPIN_OUT) ) //inTransition)
+			if( (Math.abs(orbitRadius) > offScreenRadius) && (currentTransAway == TRANS_SPIN_OUT) ) //inTransition)
 			{
 				triggerNewTransitionBack();
 			}
 
-			if( (Math.abs(orbitRadius) <= defaultRadius) && (currentTransitionBack == TRANSITION_SPIN_IN) )
+			if( (Math.abs(orbitRadius) <= defaultRadius) && (currentTransBack == TRANS_SPIN_IN) )
 			{
-				currentTransitionBack = TRANSITION_NO_TRANSITION;
+				currentTransBack = TRANS_NO_TRANS;
 			}
 
-			if( (Math.abs(orbitRadius) >= defaultRadius) && (currentTransitionBack == TRANSITION_SPIN_OUT) ) //inTransition)
+			if( (Math.abs(orbitRadius) >= defaultRadius) && (currentTransBack == TRANS_SPIN_OUT) ) //inTransition)
 			{
-				currentTransitionBack = TRANSITION_NO_TRANSITION;
+				currentTransBack = TRANS_NO_TRANS;
 			}
 
-			if( (Math.abs(orbitRadius) < 1) && (currentTransitionAway == TRANSITION_SPIN_IN) )
+			if( (Math.abs(orbitRadius) < 1) && (currentTransAway == TRANS_SPIN_IN) )
 			{
 				triggerNewTransitionBack();
 			}
 			
 			
 			//reset other transitions irregularity
-			if(currentTransitionAway == TRANSITION_HALT_AT_12)
+			if(currentTransAway == TRANS_HALT_AT_12)
 			{
-				currentTransitionAway = TRANSITION_NO_TRANSITION;
+				currentTransAway = TRANS_NO_TRANS;
 				//orbitRadius = defaultRadius;
 			}
-			if(currentTransitionAway == TRANSITION_HALT_AT_CLOSEST)
+			if(currentTransAway == TRANS_HALT_AT_CLOSEST)
 			{
-				currentTransitionAway = TRANSITION_NO_TRANSITION;
+				currentTransAway = TRANS_NO_TRANS;
 				//orbitRadius = defaultRadius;
 			}
 
-			if(currentTransitionBack == TRANSITION_HALT_AT_12)
+			if(currentTransBack == TRANS_HALT_AT_12)
 			{
-				currentTransitionBack = TRANSITION_NO_TRANSITION;
+				currentTransBack = TRANS_NO_TRANS;
 				//orbitRadius = defaultRadius;
 			}
-			if(currentTransitionBack == TRANSITION_HALT_AT_CLOSEST)
+			if(currentTransBack == TRANS_HALT_AT_CLOSEST)
 			{
-				currentTransitionBack = TRANSITION_NO_TRANSITION;
+				currentTransBack = TRANS_NO_TRANS;
 				//orbitRadius = defaultRadius;
 			}
-			
-        	if(orbitTypeIndex== 1)
+
+        	if(orbitTypeIndex== ORBIT_6_KNOT)
         	{
 				setCount = 6;
         		orbitalCount = setCount*trailCount;
@@ -440,7 +427,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 	            }
         	}//ORBIT_6_KNOT
         	
-        	if(orbitTypeIndex == 2)
+        	if(orbitTypeIndex == ORBIT_4_KNOT)
         	{
 				setCount=4;
         		orbitalCount = setCount*trailCount;
@@ -457,7 +444,25 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 	            }
         	}//ORBIT_4_KNOT
 
-			if(orbitTypeIndex == 4)
+			if(orbitTypeIndex == ORBIT_4_SIMPLE)
+			{
+				setCount = 3;
+				orbitalCount = setCount * trailCount;
+
+				for(int i = 0; i < orbitalCount; i++)
+				{
+					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
+					dotColor = (dotColor + 1)%setCount;
+					//	int dotSize = i/setCount;
+					offset = now-(i*90f);
+
+					c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius),
+							mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius),
+							1+(dotSize*dotSizeIncrement), mPaint);
+				}
+			}//ORBIT_4_SIMPLE
+
+			if(orbitTypeIndex == ORBIT_3_SIMPLE)
         	{
 				setCount = 4;
         		orbitalCount = setCount * trailCount;
@@ -472,27 +477,9 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 								 mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius), 
 								 1+(dotSize*dotSizeIncrement), mPaint);
 	            }
-        	}//ORBIT_4_SIMPLE
+        	}//simple3
 			
-			if(orbitTypeIndex == 3)
-        	{
-				setCount = 3;
-        		orbitalCount = setCount * trailCount;
-               
-	            for(int i = 0; i < orbitalCount; i++)
-	            {
-					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
-					dotColor = (dotColor + 1)%setCount;
-				//	int dotSize = i/setCount;
-					offset = now-(i*90f);
-					
-	                c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius), 
-								 mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius), 
-								 1+(dotSize*dotSizeIncrement), mPaint);
-	            }
-			}//simple3
-			
-			if(orbitTypeIndex == 5)
+			if(orbitTypeIndex == ORBIT_5_SIMPLE)
         	{
 				setCount = 5;
         		orbitalCount = setCount*trailCount;
@@ -509,7 +496,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 	            }
 			}//5 simple
 
-			if(orbitTypeIndex == 6)
+			if(orbitTypeIndex == ORBIT_8)
         	{
 			//	setCount = trailCount;
         		orbitalCount = trailCount;
@@ -536,12 +523,10 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
 		private void offscreenSetNewOrbit()
 		{
-			currentTransitionAway = TRANSITION_NO_TRANSITION;
+			currentTransAway = TRANS_NO_TRANS;
 
-
-			Log.d("TYPE","new orbit setting = "+OrbitalLiveWallpaperSettings.orbitType);
-			if(OrbitalLiveWallpaperSettings.orbitType == "Random") {
-				orbitTypeIndex = rng.nextInt(orbitNames.length-1)+1;
+			if(OrbitalLiveWallpaperSettings.orbitType.equals("Random")) {
+				orbitTypeIndex = rng.nextInt(orbitNames.length-1);
 //				orbitType = orbitNames[orbitTypeIndex];
 			} else {
 //				orbitType = OrbitalLiveWallpaperSettings.orbitType;
@@ -549,28 +534,28 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 			}
             switch(OrbitalLiveWallpaperSettings.orbitCount){
                 case "Random":
-                    trailCount = orbitalCounts[orbitTypeIndex-1][rng.nextInt(2)+1];
+                    trailCount = orbitalCounts[orbitTypeIndex][rng.nextInt(2)+1];
                     break;
                 case "Few":
-                    trailCount = orbitalCounts[orbitTypeIndex-1][0];
+                    trailCount = orbitalCounts[orbitTypeIndex][0];
                     break;
                 case "Medium":
-                    trailCount = orbitalCounts[orbitTypeIndex-1][1];
+                    trailCount = orbitalCounts[orbitTypeIndex][1];
                     break;
                 case "Many":
-                    trailCount = orbitalCounts[orbitTypeIndex-1][2];
+                    trailCount = orbitalCounts[orbitTypeIndex][2];
                     break;
                 default:
                     break;
             }
-			if(OrbitalLiveWallpaperSettings.orbitSpeed == "Random") {
+			if(OrbitalLiveWallpaperSettings.orbitSpeed.equals("Random")) {
 				speedIndex = rng.nextInt(2)+1;
-				orbitSpeed = orbitSpeeds[orbitTypeIndex-1][speedIndex] ;
+				orbitSpeed = orbitSpeeds[orbitTypeIndex][speedIndex] ;
 			}
-			if(OrbitalLiveWallpaperSettings.dotSize == "Random") {
-				dotSize = dotSizes[orbitTypeIndex-1][rng.nextInt(2)+1];
+			if(OrbitalLiveWallpaperSettings.dotSize.equals("Random")) {
+				dotSize = dotSizes[orbitTypeIndex][rng.nextInt(2)+1];
 			}
-            if(OrbitalLiveWallpaperSettings.dotColor == "Random") {
+            if(OrbitalLiveWallpaperSettings.dotColor.equals("Random")) {
                 currentScheme = rng.nextInt(colorSchemes.length-1)+1;
             }
 
@@ -580,17 +565,30 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         
     }//class TargetEngine
 
-	private static int typeToIndex(String orbit) {
-		int value = 0;
-		switch (orbit){
-			case "Trefoil": value = 1; break;
-			case "Trefoil2": value = 2; break;
-			case "Simple3": value = 3; break;
-			case "Simple4": value = 4; break;
-			case "Simple5": value = 5; break;
-			case "Chasing": value = 6; break;
-		}
-		return value;
-	}
+    private static int typeToIndex(String orbit) {
+        int value = 0;
+        switch (orbit){
+            case "Trefoil": value = ORBIT_6_KNOT; break;
+            case "Trefoil2": value = ORBIT_4_KNOT; break;
+            case "Simple3": value = ORBIT_4_SIMPLE; break;
+            case "Simple4": value = ORBIT_3_SIMPLE; break;
+            case "Simple5": value = ORBIT_5_SIMPLE; break;
+            case "Chasing": value = ORBIT_8; break;
+        }
+        return value;
+    }
 
-}//class OrbitalLiveWallpaper	
+    private static String indexToType(int orbit) {
+        String value = "";
+        switch (orbit){
+            case ORBIT_6_KNOT: value = "Trefoil"; break;
+            case ORBIT_4_KNOT: value = "Trefoil2"; break;
+            case ORBIT_4_SIMPLE: value = "Simple3"; break;
+            case ORBIT_3_SIMPLE: value = "Simple4"; break;
+            case ORBIT_5_SIMPLE: value = "Simple5"; break;
+            case ORBIT_8: value = "Chasing"; break;
+        }
+        return value;
+    }
+
+}//class OrbitalLiveWallpaper

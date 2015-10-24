@@ -4,4 +4,14 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="pref_syncConnectionTypes_default">Chasing</string>
+    <string name="main_config">Welcome, to begin using Orbital LWP you will need to configure your wallpaper settings. Select the option to set live wallpaper and then select "Orbital LWP".</string>
+    <string name="main_settings">Now you can configure the behaviour of Orbital LWP. The settings can be accessed using the Android live wallpaper settings menu or the button below.</string>
+    <string name="main_others">Other PuZZleDucK apps on the Play store.</string>
+    <string name="main_src">Take a look at the source code for Orbitals LWP.</string>
+    <string name="main_email">Contact the developer.</string>
+    <string name="button_email">Contact PuZZleDucK</string>
+    <string name="button_src">Orbital LWP on GitHub</string>
+    <string name="button_others">PuZZleDucK on Play</string>
+    <string name="button_settings">Orbital Settings</string>
+    <string name="button_config">Configure wallpaper</string>
 </resources>

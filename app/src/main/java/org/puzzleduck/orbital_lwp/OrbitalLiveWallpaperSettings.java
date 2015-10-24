@@ -42,7 +42,7 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
         orbitCount = sharedPreferences.getString("orbit_count_cycle_on", "Random");
         orbitSpeed = sharedPreferences.getString("orbit_speed_cycle_on", "Random");
         dotSize = sharedPreferences.getString("orbit_size_cycle_on", "Random");
-        transitionType = sharedPreferences.getString("orbit_transition_cycle_on", "Random");
+//        transitionType = sharedPreferences.getString("orbit_transition_cycle_on", "Random");
         orbitType = sharedPreferences.getString("fixed_orbit_type", "Random");
         transitionType = sharedPreferences.getString("fixed_transitions", "Random");
 
@@ -79,7 +79,8 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
                 orbitSpeed = sharedPreferences.getString("orbit_speed_cycle_on", "Random");
                 break;
             case "orbit_transition_cycle_on":
-                transitionType = sharedPreferences.getString("orbit_transition_cycle_on", "Random");
+                //transitionType = sharedPreferences.getString("orbit_transition_cycle_on", "Random");
+                transitionType = sharedPreferences.getString("fixed_transitions", "Random");
                 break;
 
             default: break;
