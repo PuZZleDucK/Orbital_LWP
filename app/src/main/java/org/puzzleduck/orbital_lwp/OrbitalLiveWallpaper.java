@@ -56,7 +56,6 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 		{3,5,7},//3s`
 		{2,3,4},//5
 		{3,5,6}};//8
-//	public static String orbitType = "Random";
     private int[][] dotSizes = {
 		{1,1,1},//6
 		{2,4,5},//4
@@ -73,17 +72,13 @@ public class OrbitalLiveWallpaper extends WallpaperService {
     private static String[] transitionNames = {"no transition","Spin in","Spin out"};//,"Halt at 12","Halt at edge"};
 
     private static int orbitRadius = 100;
-    private static int orbitDiameter = orbitRadius * 2;
-    private static float offset;
     private float orbitalCompression = 0.125f;//2.5f * orbitSpeed;
-    private int orbitalCount = 0;
-    private float dotSizeIncrement = 1.0f;
+    private final float dotSizeIncrement = 1.0f;
     private int trailCount = 6;
-    private int setCount = 3;
     private int defaultRadius = 100;
     private int offScreenRadius = 1200;
-    private int fastSpeed = 20;
-    private int slowSpeed = 7;
+    private final int fastTransition = 20;
+    private final int slowTransition = 7;
     int speedIndex = 0;
     int dotSize = 3;
 
@@ -234,7 +229,6 @@ public class OrbitalLiveWallpaper extends WallpaperService {
                 default:
                     break;
             }
-
 			orbitRadius = defaultRadius;
 		}
 
@@ -257,6 +251,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
                     break;
             }
 
+			// TODO: case
 			if(currentTransBack == TRANS_SPIN_IN)
 			{
 				orbitRadius = offScreenRadius;
@@ -266,9 +261,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 			{
 				orbitRadius = 0;
 			}
-			
 		}
-		
 		
         void drawFrame() {
             final SurfaceHolder holder = getSurfaceHolder();
@@ -299,175 +292,164 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
         void drawOrbital(Canvas c) 
         {
-			if(DEBUG)
-			{
+			if(DEBUG) {
                 drawDebug(c, mPaint);
 			}
 
 			dotColor = 0;
 
             adjustRadius();
-//            triggerTransitions();
+            triggerTransitions();
 
-			if( (Math.abs(orbitRadius) > offScreenRadius) && (currentTransAway == TRANS_SPIN_OUT) ) //inTransition)
-			{
-				triggerNewTransitionBack();
+			switch(orbitTypeIndex) {
+				case ORBIT_6_KNOT: draw6knot(c, mPaint); break;
+				case ORBIT_4_KNOT: draw4knot(c, mPaint); break;
+				case ORBIT_4_SIMPLE: draw4simple(c, mPaint); break;
+				case ORBIT_3_SIMPLE: draw3simple(c, mPaint); break;
+				case ORBIT_5_SIMPLE: draw5simple(c, mPaint); break;
+				case ORBIT_8: draw8(c, mPaint); break;
 			}
-
-			if( (Math.abs(orbitRadius) <= defaultRadius) && (currentTransBack == TRANS_SPIN_IN) )
-			{
-				currentTransBack = TRANS_NO_TRANS;
-			}
-
-			if( (Math.abs(orbitRadius) >= defaultRadius) && (currentTransBack == TRANS_SPIN_OUT) ) //inTransition)
-			{
-				currentTransBack = TRANS_NO_TRANS;
-			}
-
-			if( (Math.abs(orbitRadius) < 1) && (currentTransAway == TRANS_SPIN_IN) )
-			{
-				triggerNewTransitionBack();
-			}
-			
-			
-			//reset other transitions irregularity
-			if(currentTransAway == TRANS_HALT_AT_12)
-			{
-				currentTransAway = TRANS_NO_TRANS;
-				//orbitRadius = defaultRadius;
-			}
-			if(currentTransAway == TRANS_HALT_AT_CLOSEST)
-			{
-				currentTransAway = TRANS_NO_TRANS;
-				//orbitRadius = defaultRadius;
-			}
-
-			if(currentTransBack == TRANS_HALT_AT_12)
-			{
-				currentTransBack = TRANS_NO_TRANS;
-				//orbitRadius = defaultRadius;
-			}
-			if(currentTransBack == TRANS_HALT_AT_CLOSEST)
-			{
-				currentTransBack = TRANS_NO_TRANS;
-				//orbitRadius = defaultRadius;
-			}
-
-        	if(orbitTypeIndex== ORBIT_6_KNOT)
-        	{
-				setCount = 6;
-        		orbitalCount = setCount*trailCount;
-                
-	            for(int i = 0; i < orbitalCount; i++)
-	            {
-					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
-					dotColor = (dotColor + 1)%(setCount);
-					offset = now-(i*45);//to split out of function
-				//	int dotSize = i/setCount;
-					
-					
-	                c.drawCircle( mTouchX + (float) ( (2+Math.cos( 3*offset ) * Math.cos(2*offset )) * orbitRadius )-orbitDiameter, 
-								 mTouchY + (float) ( (2+Math.cos( 3*offset ) * Math.sin(2*offset )) *orbitRadius)-orbitDiameter, 
-	           		     (1+dotSize)*dotSizeIncrement, mPaint);
-	            }
-        	}//ORBIT_6_KNOT
-        	
-        	if(orbitTypeIndex == ORBIT_4_KNOT)
-        	{
-				setCount=4;
-        		orbitalCount = setCount*trailCount;
-	            for(int i = 0; i < orbitalCount; i++)
-	            {
-					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
-					dotColor = (dotColor + 1)%setCount;
-				//	int dotSize = i/setCount;
-					offset = now-(i*67.5f);
-	            	
-	                c.drawCircle( mTouchX + (float) ( (2+Math.cos( 2*offset ) * Math.cos(offset)) *orbitRadius )-orbitDiameter, 
-								 mTouchY + (float) ( (2+Math.cos( 2*offset ) * Math.sin(offset)) *orbitRadius )-orbitDiameter, 
-	           		     (1+dotSize)*dotSizeIncrement, mPaint);
-	            }
-        	}//ORBIT_4_KNOT
-
-			if(orbitTypeIndex == ORBIT_4_SIMPLE)
-			{
-				setCount = 3;
-				orbitalCount = setCount * trailCount;
-
-				for(int i = 0; i < orbitalCount; i++)
-				{
-					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
-					dotColor = (dotColor + 1)%setCount;
-					//	int dotSize = i/setCount;
-					offset = now-(i*90f);
-
-					c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius),
-							mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius),
-							1+(dotSize*dotSizeIncrement), mPaint);
-				}
-			}//ORBIT_4_SIMPLE
-
-			if(orbitTypeIndex == ORBIT_3_SIMPLE)
-        	{
-				setCount = 4;
-        		orbitalCount = setCount * trailCount;
-	            for(int i = 0; i < orbitalCount; i++)
-	            {
-					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
-					dotColor = (dotColor + 1)%setCount;
-				//	int dotSize = i/setCount;
-					offset = now-(i*67.5f);
-					
-	                c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius), 
-								 mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius), 
-								 1+(dotSize*dotSizeIncrement), mPaint);
-	            }
-        	}//simple3
-			
-			if(orbitTypeIndex == ORBIT_5_SIMPLE)
-        	{
-				setCount = 5;
-        		orbitalCount = setCount*trailCount;
-	            for(int i = 0; i < orbitalCount; i++)
-	            {
-					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
-					dotColor = (dotColor + 1)%setCount;
-				//	int dotSize = i/setCount;
-					offset = now-(i*5f);
-					
-	                c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius), 
-								 mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius), 
-								 (1+dotSize)*dotSizeIncrement, mPaint);
-	            }
-			}//5 simple
-
-			if(orbitTypeIndex == ORBIT_8)
-        	{
-			//	setCount = trailCount;
-        		orbitalCount = trailCount;
-
-				if(Math.sin(now) < -0.1 || Math.sin(now) > 0.1)//compensate for orientation (or better yet gyro) in next release instead of hard coding 179
-				{
-					orbitalCompression +=  ((float) Math.sin( now ) * 0.2f)*orbitSpeed;//* (orbitSpeed/5)  //orbitSpeed
-				}
-				
-	            for(int i = 0; i < orbitalCount; i++)
-	            {
-					mPaint.setColor(colorSchemes[currentScheme][dotColor]);
-					dotColor = (dotColor + 1)%setCount;
-					offset = now + (i * Math.abs(orbitalCompression)) ;  //+ (5) add rotation offset
-					
-					c.drawCircle( mTouchX + (float) ( (Math.sin( offset+179f) ) *orbitRadius), 
-								 mTouchY + (float) ( (Math.cos( offset+179f) ) *orbitRadius), 
-								 2+dotSize, mPaint);
-	            } 
-			}//windows late
-
 			now += orbitSpeed;
         }
 
-		private void offscreenSetNewOrbit()
-		{
+		private void draw8(Canvas c, Paint mPaint) {
+			int orbitalCount = trailCount;
+
+			if(Math.sin(now) < -0.1 || Math.sin(now) > 0.1) { //compensate for orientation (or better yet gyro) in next release instead of hard coding 179
+				orbitalCompression +=  ((float) Math.sin( now ) * 0.2f)*orbitSpeed;//* (orbitSpeed/5)  //orbitSpeed
+			}
+
+			for(int i = 0; i < orbitalCount; i++) {
+				mPaint.setColor(colorSchemes[currentScheme][dotColor]);
+				dotColor = (dotColor + 1);
+				double offset = now + (i * Math.abs(orbitalCompression)) ;  //+ (5) add rotation offset
+
+				c.drawCircle( mTouchX + (float) ( (Math.sin( offset+179f) ) *orbitRadius),
+						mTouchY + (float) ( (Math.cos( offset+179f) ) *orbitRadius),
+						2+dotSize, mPaint);
+			}
+		}
+
+		private void draw5simple(Canvas c, Paint mPaint) {
+			int setCount = 5;
+			int orbitalCount = setCount*trailCount;
+			for(int i = 0; i < orbitalCount; i++) {
+				mPaint.setColor(colorSchemes[currentScheme][dotColor]);
+				dotColor = (dotColor + 1)%setCount;
+				//	int dotSize = i/setCount;
+				double offset = now-(i*5f);
+
+				c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius),
+						mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius),
+						(1+dotSize)*dotSizeIncrement, mPaint);
+			}
+		}
+
+		private void draw3simple(Canvas c, Paint mPaint) {
+			int setCount = 4;
+			int orbitalCount = setCount * trailCount;
+			for(int i = 0; i < orbitalCount; i++) {
+				mPaint.setColor(colorSchemes[currentScheme][dotColor]);
+				dotColor = (dotColor + 1)%setCount;
+				//	int dotSize = i/setCount;
+				double offset = now-(i*67.5f);
+
+				c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius),
+						mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius),
+						1+(dotSize*dotSizeIncrement), mPaint);
+			}
+		}
+
+		private void draw4simple(Canvas c, Paint mPaint) {
+			int setCount = 3;
+			int orbitalCount = setCount * trailCount;
+
+			for(int i = 0; i < orbitalCount; i++) {
+				mPaint.setColor(colorSchemes[currentScheme][dotColor]);
+				dotColor = (dotColor + 1)%setCount;
+				//	int dotSize = i/setCount;
+				double offset = now-(i*90f);
+
+				c.drawCircle( mTouchX + (float) ( (Math.sin( offset ) ) *orbitRadius),
+						mTouchY + (float) ( (Math.cos( offset ) ) *orbitRadius),
+						1+(dotSize*dotSizeIncrement), mPaint);
+			}
+		}
+
+		private void draw4knot(Canvas c, Paint mPaint) {
+			int setCount=4;
+			int orbitalCount = setCount*trailCount;
+			for(int i = 0; i < orbitalCount; i++) {
+				mPaint.setColor(colorSchemes[currentScheme][dotColor]);
+				dotColor = (dotColor + 1)%setCount;
+				//	int dotSize = i/setCount;
+				double offset = now-(i*67.5f);
+
+				c.drawCircle( mTouchX + (float) ( (2+Math.cos( 2*offset ) * Math.cos(offset)) *orbitRadius )-(orbitRadius * 2),
+						mTouchY + (float) ( (2+Math.cos( 2*offset ) * Math.sin(offset)) *orbitRadius )-(orbitRadius * 2),
+						(1+dotSize)*dotSizeIncrement, mPaint);
+			}
+		}
+
+		private void draw6knot(Canvas c, Paint mPaint) {
+			int setCount = 6;
+			int orbitalCount = setCount*trailCount;
+
+			for(int i = 0; i < orbitalCount; i++) {
+				mPaint.setColor(colorSchemes[currentScheme][dotColor]);
+				dotColor = (dotColor + 1)%(setCount);
+				double offset = now-(i*45);//to split out of function
+				//	int dotSize = i/setCount;
+
+
+				c.drawCircle( mTouchX + (float) ( (2+Math.cos( 3*offset ) * Math.cos(2*offset )) * orbitRadius )-(orbitRadius * 2),
+						mTouchY + (float) ( (2+Math.cos( 3*offset ) * Math.sin(2*offset )) *orbitRadius)-(orbitRadius * 2),
+						(1+dotSize)*dotSizeIncrement, mPaint);
+			}
+		}
+
+		// TODO: case
+		private void triggerTransitions() {
+			if( (Math.abs(orbitRadius) > offScreenRadius) && (currentTransAway == TRANS_SPIN_OUT) ) { //inTransition)
+				triggerNewTransitionBack();
+			}
+
+			if( (Math.abs(orbitRadius) <= defaultRadius) && (currentTransBack == TRANS_SPIN_IN) ) {
+				currentTransBack = TRANS_NO_TRANS;
+			}
+
+			if( (Math.abs(orbitRadius) >= defaultRadius) && (currentTransBack == TRANS_SPIN_OUT) ) { //inTransition)
+				currentTransBack = TRANS_NO_TRANS;
+			}
+
+			if( (Math.abs(orbitRadius) < 1) && (currentTransAway == TRANS_SPIN_IN) ) {
+				triggerNewTransitionBack();
+			}
+
+
+			// TODO: case
+			//reset other transitions irregularity
+			if(currentTransAway == TRANS_HALT_AT_12) {
+				currentTransAway = TRANS_NO_TRANS;
+				//orbitRadius = defaultRadius;
+			}
+			if(currentTransAway == TRANS_HALT_AT_CLOSEST) {
+				currentTransAway = TRANS_NO_TRANS;
+				//orbitRadius = defaultRadius;
+			}
+
+			if(currentTransBack == TRANS_HALT_AT_12) {
+				currentTransBack = TRANS_NO_TRANS;
+				//orbitRadius = defaultRadius;
+			}
+			if(currentTransBack == TRANS_HALT_AT_CLOSEST) {
+				currentTransBack = TRANS_NO_TRANS;
+				//orbitRadius = defaultRadius;
+			}
+
+		}
+
+		private void offscreenSetNewOrbit() {
 			currentTransAway = TRANS_NO_TRANS;
 			updateOrbitType();
             updateDotCount();
@@ -480,6 +462,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 		}//setup new orbit
 
 
+		// TODO: case
         private void adjustRadius() {
             if(orbitRadius <= 0 && currentTransAway == TRANS_SPIN_IN) {
                 triggerNewTransitionBack();
@@ -490,23 +473,19 @@ public class OrbitalLiveWallpaper extends WallpaperService {
             }// rad = 0 or off;
 
             if(currentTransAway == TRANS_SPIN_OUT) {
-                orbitRadius += fastSpeed;
-                orbitDiameter = orbitRadius*2;
+                orbitRadius += fastTransition;
             }
 
             if(currentTransAway == TRANS_SPIN_IN) {
-                orbitRadius -= slowSpeed;
-                orbitDiameter = orbitRadius*2;
+                orbitRadius -= slowTransition;
             }
 
             if(currentTransBack == TRANS_SPIN_OUT) {
-                orbitRadius += slowSpeed ;
-                orbitDiameter = orbitRadius*2;
+                orbitRadius += slowTransition;
             }
 
             if(currentTransBack == TRANS_SPIN_IN) {
-                orbitRadius -= fastSpeed ;
-                orbitDiameter = orbitRadius*2;
+                orbitRadius -= fastTransition;
             }
         }
 
@@ -540,17 +519,20 @@ public class OrbitalLiveWallpaper extends WallpaperService {
                 break;
         }
     }
+
     private void updateOrbitSpeed() {
         if(OrbitalLiveWallpaperSettings.orbitSpeed.equals("Random")) {
             speedIndex = rng.nextInt(2)+1;
             orbitSpeed = orbitSpeeds[orbitTypeIndex][speedIndex] ;
         }
     }
+
     private void updateDotSize() {
         if(OrbitalLiveWallpaperSettings.dotSize.equals("Random")) {
             dotSize = dotSizes[orbitTypeIndex][rng.nextInt(2)+1];
         }
     }
+
     private void updateDotColor() {
         if(OrbitalLiveWallpaperSettings.dotColor.equals("Random")) {
             currentScheme = rng.nextInt(colorSchemes.length-1)+1;
@@ -596,7 +578,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
     private void drawDebug(Canvas c, Paint mPaint) {
         mPaint.setTextSize(24);
-        mPaint.setColor(Color.WHITE);
+		mPaint.setColor(Color.WHITE);
         c.drawText("debug now; " + now, 30, height - 460, mPaint);
         c.drawText("      Trans away: " + transitionNames[currentTransAway +1], 30,height-430,mPaint);
         c.drawText("      Trans back: " + transitionNames[currentTransBack +1], 30,height-400,mPaint);
@@ -610,13 +592,8 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
         c.drawText("      orbit: " + indexToType(orbitTypeIndex) + "("+orbitTypeIndex+")" , 30,height-270,mPaint);
         c.drawText("      speed: " +  orbitSpeed, 30,height-240,mPaint);
-        c.drawText("      count: " +  setCount +"/"+trailCount, 30,height-210,mPaint);
-        c.drawText("      offset 1: " +  offset, 30,height-180,mPaint);
 
-        mPaint.setARGB(255,255,0,0);
-        c.drawLine(mTouchX,mTouchY,mTouchX+(300f*(float)Math.sin(offset)),mTouchY+(300f*(float)Math.cos(offset)),mPaint);
-        c.drawLine(mTouchX,mTouchY,mTouchX+(300f*(float)Math.sin(now)),mTouchY+(300f*(float)Math.cos(now)),mPaint);
+        mPaint.setARGB(255, 255,0,0);
     }
-
 
 }//class OrbitalLiveWallpaper
