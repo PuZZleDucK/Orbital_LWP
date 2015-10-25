@@ -39,14 +39,14 @@
 
     <string-array name="direction_types">
         <item>Random</item>
-        <item>Clockwise</item>
         <item>Anticlockwise</item>
+        <item>Clockwise</item>
     </string-array>
 
     <string-array name="direction_types_values">
         <item>Random</item>
-        <item>Clockwise</item>
         <item>Anticlockwise</item>
+        <item>Clockwise</item>
     </string-array>
 
     <string-array name="color_types">
@@ -72,7 +72,6 @@
         <item>Apache</item>
         <item>SlashDot</item>
         <item>Ubuntu1</item>
-        <item>Cyanogen</item>
         <item>Cherry</item>
         <item>Ubuntu2</item>
     </string-array>

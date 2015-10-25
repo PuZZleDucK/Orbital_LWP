@@ -85,15 +85,14 @@ public class OrbitalLiveWallpaper extends WallpaperService {
     private int dotColor = Color.WHITE;
 	private int currentScheme = 0;
 	private int colorSchemes[][] = {
+            //	{ Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,)},//w
 			{ Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255), Color.argb(255,255,255,255)},//white
 			{ Color.argb(255,195,160,20), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,66,41,8), Color.argb(255,255,255,255)},//xda
 			{ Color.argb(255,98,215,230), Color.argb(255,150,195,200), Color.argb(255,98,215,230), Color.argb(255,60,170,180), Color.argb(255,98,215,230), Color.argb(255,255,255,255)},//cyanogen
 			{ Color.argb(255,220,115,20), Color.argb(255,220,115,20), Color.argb(255,90,175,200), Color.argb(255,250,245,10), Color.argb(255,220,115,20), Color.argb(255,5,40,90)},//fire Fox
-			//	{ Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,), Color.argb(255,,,)},//w
 			{ Color.argb(255,220,200,20), Color.argb(255,80,30,120), Color.argb(255,160,50,200), Color.argb(255,190,50,150), Color.argb(255,230,10,30), Color.argb(255,240,50,5)},//Apache
 			{ Color.argb(255,255,255,255), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124), Color.argb(255,45,128,124)},//slash.
 			{ Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,255,181,21), Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,255,181,21)},//ubuntu classic
-			{ Color.argb(255,130,230,255), Color.argb(255,130,230,255), Color.argb(255,100,200,255), Color.argb(255,100,200,255), Color.argb(255,160,260,255), Color.argb(255,160,260,255)},//cy-gen
 			{ Color.argb(255,255,0,255), Color.argb(255,255,0,90), Color.argb(255,255,0,90), Color.argb(255,255,0,255), Color.argb(255,255,0,90), Color.argb(255,255,0,255)},//ferretcheery
 			{ Color.argb(255,101,16,89), Color.argb(255,255,99,9), Color.argb(255,201,0,22), Color.argb(255,101,16,89), Color.argb(255,255,99,9), Color.argb(255,201,0,22) }//Ubuntu purple
 	};
@@ -138,9 +137,9 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
 		    setWindowProperties();
 			rng.setSeed(SystemClock.elapsedRealtime());
-            if(OrbitalLiveWallpaperSettings.dotColor == null) {
-                OrbitalLiveWallpaperSettings.setDefaultValues();
-            }
+//            if(OrbitalLiveWallpaperSettings.dotColor == null) {
+                OrbitalLiveWallpaperSettings.setDefaultValues(getApplicationContext());
+//            }
         }
 
 		private void setWindowProperties()
@@ -207,15 +206,13 @@ public class OrbitalLiveWallpaper extends WallpaperService {
                 mTouchY = event.getY();
 //            }
 	
-			if(	currentTransAway == TRANS_NO_TRANS && currentTransBack == TRANS_NO_TRANS)
-			{
+			if(	currentTransAway == TRANS_NO_TRANS && currentTransBack == TRANS_NO_TRANS) {
 				triggerNewTransitionAway();
 			}
             super.onTouchEvent(event);
         }
 
-		private void triggerNewTransitionAway()
-		{
+		private void triggerNewTransitionAway() {
             switch(OrbitalLiveWallpaperSettings.transitionTypes){
                 case "Random":
                     currentTransAway = rng.nextInt(2); // rng.nextInt(transitionCount);
@@ -232,9 +229,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 			orbitRadius = defaultRadius;
 		}
 
-		
-		private void triggerNewTransitionBack()
-		{
+		private void triggerNewTransitionBack() {
 			offscreenSetNewOrbit();
 
             switch(OrbitalLiveWallpaperSettings.transitionTypes){
@@ -242,23 +237,21 @@ public class OrbitalLiveWallpaper extends WallpaperService {
                     currentTransBack = rng.nextInt(2); // rng.nextInt(transitionCount);
                     break;
                 case "In":
-                    currentTransBack = 0;
+                    currentTransBack = 1;
                     break;
                 case "Out":
-                    currentTransBack = 1;
+                    currentTransBack = 0;
                     break;
                 default:
                     break;
             }
 
 			// TODO: case
-			if(currentTransBack == TRANS_SPIN_IN)
-			{
+			if(currentTransBack == TRANS_SPIN_IN) {
 				orbitRadius = offScreenRadius;
 			}
 
-			if(currentTransBack == TRANS_SPIN_OUT)
-			{
+			if(currentTransBack == TRANS_SPIN_OUT) {
 				orbitRadius = 0;
 			}
 		}
@@ -489,55 +482,114 @@ public class OrbitalLiveWallpaper extends WallpaperService {
             }
         }
 
+        private void updateOrbitType() {
+            if(OrbitalLiveWallpaperSettings.orbitType.equals("Random")) {
+                orbitTypeIndex = rng.nextInt(orbitNames.length-1);
+//				orbitType = orbitNames[orbitTypeIndex];
+            } else {
+//				orbitType = OrbitalLiveWallpaperSettings.orbitType;
+                orbitTypeIndex = typeToIndex(OrbitalLiveWallpaperSettings.orbitType);
+            }
+        }
+        private void updateDotCount() {
+            switch(OrbitalLiveWallpaperSettings.orbitCount){
+                case "Random":
+                    trailCount = orbitalCounts[orbitTypeIndex][rng.nextInt(2)+1];
+                    break;
+                case "Few":
+                    trailCount = orbitalCounts[orbitTypeIndex][0];
+                    break;
+                case "Medium":
+                    trailCount = orbitalCounts[orbitTypeIndex][1];
+                    break;
+                case "Many":
+                    trailCount = orbitalCounts[orbitTypeIndex][2];
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void updateOrbitSpeed() {
+            switch(OrbitalLiveWallpaperSettings.orbitSpeed){
+                case "Random":
+                    speedIndex = rng.nextInt(2)+1;
+                    break;
+                case "Fast":
+                    speedIndex = 2;
+                    break;
+                case "Medium":
+                    speedIndex = 1;
+                    break;
+                case "Slow":
+                    speedIndex = 0;
+                    break;
+                default:
+                    break;
+            }
+            orbitSpeed = orbitSpeeds[orbitTypeIndex][speedIndex];
+        }
+
+        private void updateDotSize() {
+            switch(OrbitalLiveWallpaperSettings.dotSize){
+                case "Random":
+                    dotSize = dotSizes[orbitTypeIndex][rng.nextInt(2)+1];
+                    break;
+                case "Large":
+                    dotSize = dotSizes[orbitTypeIndex][2];
+                    break;
+                case "Medium":
+                    dotSize = dotSizes[orbitTypeIndex][1];
+                    break;
+                case "Small":
+                    dotSize = dotSizes[orbitTypeIndex][0];
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void updateDotColor() {
+            switch(OrbitalLiveWallpaperSettings.dotColor){
+                case "Random":
+                    currentScheme = rng.nextInt(colorSchemes.length-1)+1;
+                    break;
+                case "White":
+                    currentScheme = 0;
+                    break;
+                case "XDA":
+                    currentScheme = 1;
+                    break;
+                case "Cyanogen":
+                    currentScheme = 2;
+                    break;
+                case "FireFox":
+                    currentScheme = 3;
+                    break;
+                case "Apache":
+                    currentScheme = 4;
+                    break;
+                case "SlashDot":
+                    currentScheme = 5;
+                    break;
+                case "Ubuntu1":
+                    currentScheme = 6;
+                    break;
+                case "Cherry":
+                    currentScheme = 7;
+                    break;
+                case "Ubuntu2":
+                    currentScheme = 8;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
     }//class TargetEngine
 
 
-    private void updateOrbitType() {
-        if(OrbitalLiveWallpaperSettings.orbitType.equals("Random")) {
-            orbitTypeIndex = rng.nextInt(orbitNames.length-1);
-//				orbitType = orbitNames[orbitTypeIndex];
-        } else {
-//				orbitType = OrbitalLiveWallpaperSettings.orbitType;
-            orbitTypeIndex = typeToIndex(OrbitalLiveWallpaperSettings.orbitType);
-        }
-    }
-    private void updateDotCount() {
-        switch(OrbitalLiveWallpaperSettings.orbitCount){
-            case "Random":
-                trailCount = orbitalCounts[orbitTypeIndex][rng.nextInt(2)+1];
-                break;
-            case "Few":
-                trailCount = orbitalCounts[orbitTypeIndex][0];
-                break;
-            case "Medium":
-                trailCount = orbitalCounts[orbitTypeIndex][1];
-                break;
-            case "Many":
-                trailCount = orbitalCounts[orbitTypeIndex][2];
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void updateOrbitSpeed() {
-        if(OrbitalLiveWallpaperSettings.orbitSpeed.equals("Random")) {
-            speedIndex = rng.nextInt(2)+1;
-            orbitSpeed = orbitSpeeds[orbitTypeIndex][speedIndex] ;
-        }
-    }
-
-    private void updateDotSize() {
-        if(OrbitalLiveWallpaperSettings.dotSize.equals("Random")) {
-            dotSize = dotSizes[orbitTypeIndex][rng.nextInt(2)+1];
-        }
-    }
-
-    private void updateDotColor() {
-        if(OrbitalLiveWallpaperSettings.dotColor.equals("Random")) {
-            currentScheme = rng.nextInt(colorSchemes.length-1)+1;
-        }
-    }
 
 
     /**
