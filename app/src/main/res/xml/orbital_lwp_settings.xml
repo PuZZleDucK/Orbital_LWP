@@ -68,7 +68,7 @@
 
 
         <ListPreference
-            android:key="fixed_dot_size"
+            android:key="dot_size"
             android:title="size selector title"
             android:summary="size summary"
             android:entries="@array/size_types"
@@ -76,7 +76,7 @@
             android:defaultValue="" />
 
         <ListPreference
-            android:key="fixed_dot_count"
+            android:key="dot_count"
             android:title="count selector title"
             android:summary="count summary"
             android:entries="@array/count_types"
@@ -94,7 +94,7 @@
         android:summary="Transition Preferences summary">
 
         <ListPreference
-            android:key="fixed_transitions"
+            android:key="transition_types"
             android:title="transition selector title"
             android:summary="transition summary"
             android:entries="@array/transition_types"
@@ -102,7 +102,7 @@
             android:defaultValue="" />
 
         <ListPreference
-            android:key="fixed_transition_speed"
+            android:key="transition_speeds"
             android:title="transition speed selector title"
             android:summary="transition speed summary"
             android:entries="@array/transition_speed_types"

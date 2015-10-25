@@ -33,7 +33,7 @@ import java.util.Random;
 public class OrbitalLiveWallpaper extends WallpaperService {
 
 	protected static final String SHARED_PREFS_NAME = "orbital_lwp_settings";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int ORBIT_6_KNOT = 0;
     private static final int ORBIT_4_KNOT = 1;
@@ -216,7 +216,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
 		private void triggerNewTransitionAway()
 		{
-            switch(OrbitalLiveWallpaperSettings.transitionType){
+            switch(OrbitalLiveWallpaperSettings.transitionTypes){
                 case "Random":
                     currentTransAway = rng.nextInt(2); // rng.nextInt(transitionCount);
                     break;
@@ -237,7 +237,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 		{
 			offscreenSetNewOrbit();
 
-            switch(OrbitalLiveWallpaperSettings.transitionType){
+            switch(OrbitalLiveWallpaperSettings.transitionTypes){
                 case "Random":
                     currentTransBack = rng.nextInt(2); // rng.nextInt(transitionCount);
                     break;
@@ -579,7 +579,27 @@ public class OrbitalLiveWallpaper extends WallpaperService {
     private void drawDebug(Canvas c, Paint mPaint) {
         mPaint.setTextSize(24);
 		mPaint.setColor(Color.WHITE);
-        c.drawText("debug now; " + now, 30, height - 460, mPaint);
+
+		c.drawText("debug CURRENT: ", 50, 50, mPaint);
+        c.drawText("dotColor: "+dotColor , 50, 80, mPaint);
+//        c.drawText("orbitCount: "+ orbitCount, 50, 120, mPaint);
+        c.drawText("orbitSpeed: "+ orbitSpeed, 50, 150, mPaint);
+        c.drawText("dotSize: "+ dotSize, 50, 180, mPaint);
+//        c.drawText("transitionType: "+ transitionType, 50, 210, mPaint);
+//        c.drawText("orbitType: "+ orbitType, 50, 250, mPaint);
+//        c.drawText("orbitDirection: "+ orbitDirection, 50, 280, mPaint);
+
+        c.drawText("debug CFG: ", 250, 50, mPaint);
+        c.drawText("orbitType: "+ OrbitalLiveWallpaperSettings.orbitType, 250, 80, mPaint);
+        c.drawText("orbitSpeed: "+ OrbitalLiveWallpaperSettings.orbitSpeed, 250, 120, mPaint);
+        c.drawText("orbitDirection: "+ OrbitalLiveWallpaperSettings.orbitDirection, 250, 150, mPaint);
+        c.drawText("dotColor: "+OrbitalLiveWallpaperSettings.dotColor , 250, 210, mPaint);
+        c.drawText("dotSize: "+ OrbitalLiveWallpaperSettings.dotSize, 250, 240, mPaint);
+        c.drawText("orbitCount: "+ OrbitalLiveWallpaperSettings.orbitCount, 250, 270, mPaint);
+        c.drawText("transitionType: "+ OrbitalLiveWallpaperSettings.transitionTypes, 250, 300, mPaint);
+        c.drawText("transitionSpeed: "+ OrbitalLiveWallpaperSettings.transitionSpeeds, 250, 330, mPaint);
+
+        c.drawText("debug NOW; " + now, 30, height - 460, mPaint);
         c.drawText("      Trans away: " + transitionNames[currentTransAway +1], 30,height-430,mPaint);
         c.drawText("      Trans back: " + transitionNames[currentTransBack +1], 30,height-400,mPaint);
 
@@ -588,7 +608,6 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
         c.drawText("      a.o > d: " + (Math.abs(orbitRadius) > defaultRadius), 30,height-330,mPaint);
         c.drawText("      a.o < d: " + (Math.abs(orbitRadius) < defaultRadius) , 30,height-300,mPaint);
-
 
         c.drawText("      orbit: " + indexToType(orbitTypeIndex) + "("+orbitTypeIndex+")" , 30,height-270,mPaint);
         c.drawText("      speed: " +  orbitSpeed, 30,height-240,mPaint);

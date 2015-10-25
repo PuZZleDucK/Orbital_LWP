@@ -17,7 +17,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -25,10 +24,19 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
     protected static String orbitCount;
     protected static String orbitSpeed;
     protected static String dotSize;
-    protected static String transitionType;
+    protected static String transitionTypes;
+    protected static String transitionSpeeds;
     protected static String orbitType;
     protected static String orbitDirection;
 
+    private static final String PREF_O_TYPE = "orbit_type";
+    private static final String PREF_O_SPEED = "orbit_speed";
+    private static final String PREF_O_DIR = "orbit_direction";
+    private static final String PREF_D_COLOR = "dot_color";
+    private static final String PREF_D_SIZE = "dot_size";
+    private static final String PREF_D_COUNT = "dot_count";
+    private static final String PREF_T_TYPE = "transition_types";
+    private static final String PREF_T_SPEED = "transition_speeds";
 
     @Override
     protected void onCreate(Bundle newBundle) {
@@ -44,28 +52,29 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
         orbitCount = "Random";
         orbitSpeed = "Random";
         dotSize = "Random";
-        transitionType = "Random";
+        transitionTypes = "Random";
+        transitionSpeeds = "Random";
         orbitType = "Random";
         orbitDirection = "Random";
-
     }
+
 
     protected void setDefaultPrefs(OrbitalLiveWallpaperSettings olwps) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(olwps);
-//        cycleOrbitType = sharedPreferences.getBoolean("orbit_pattern_cycle_on", true);
-        dotColor = sharedPreferences.getString("orbit_color_cycle_on", "Random");
-        orbitCount = sharedPreferences.getString("orbit_count_cycle_on", "Random");
-        orbitSpeed = sharedPreferences.getString("orbit_speed_cycle_on", "Random");
-        dotSize = sharedPreferences.getString("orbit_size_cycle_on", "Random");
-//        transitionType = sharedPreferences.getString("orbit_transition_cycle_on", "Random");
-        orbitType = sharedPreferences.getString("fixed_orbit_type", "Random");
-        transitionType = sharedPreferences.getString("fixed_transitions", "Random");
+        orbitType = sharedPreferences.getString(PREF_O_TYPE, "Random");
+        orbitSpeed = sharedPreferences.getString(PREF_O_SPEED, "Random");
+        orbitDirection = sharedPreferences.getString(PREF_O_DIR, "Random");
+        dotColor = sharedPreferences.getString(PREF_D_COLOR, "Random");
+        dotSize = sharedPreferences.getString(PREF_D_SIZE, "Random");
+        orbitCount = sharedPreferences.getString(PREF_D_COUNT, "Random");
+        transitionTypes = sharedPreferences.getString(PREF_T_TYPE, "Random");
+        transitionSpeeds = sharedPreferences.getString(PREF_T_SPEED, "Random");
 
         getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(olwps);
     }
 
     @Override 
-    protected void onResume() { 
+    protected void onResume() {
         super.onResume();
     }
 
@@ -77,25 +86,29 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         switch(key) {
-            case "orbit_type":
-                orbitType = sharedPreferences.getString("orbit_type", "Random");
-                Log.d("TYPE","fixedOrbit = "+orbitType);
+            case PREF_O_TYPE:
+                orbitType = sharedPreferences.getString(PREF_O_TYPE, "Random");
                 break;
-            case "orbit_speed":
-                orbitSpeed = sharedPreferences.getString("orbit_speed", "Random");
+            case PREF_O_SPEED:
+                orbitSpeed = sharedPreferences.getString(PREF_O_SPEED, "Random");
                 break;
-            case "orbit_direction":
-                orbitDirection = sharedPreferences.getString("orbit_direction", "Random");
+            case PREF_O_DIR:
+                orbitDirection = sharedPreferences.getString(PREF_O_DIR, "Random");
                 break;
-            case "dot_color":
-                orbitCount = sharedPreferences.getString("orbit_count_cycle_on", "Random");
+            case PREF_D_COLOR:
+                orbitCount = sharedPreferences.getString(PREF_D_COLOR, "Random");
                 break;
-            case "orbit_speed_cycle_on":
-                orbitSpeed = sharedPreferences.getString("orbit_speed_cycle_on", "Random");
+            case PREF_D_SIZE:
+                orbitCount = sharedPreferences.getString(PREF_D_SIZE, "Random");
                 break;
-            case "orbit_transition_cycle_on":
-                //transitionType = sharedPreferences.getString("orbit_transition_cycle_on", "Random");
-                transitionType = sharedPreferences.getString("fixed_transitions", "Random");
+            case PREF_D_COUNT:
+                orbitCount = sharedPreferences.getString(PREF_D_COUNT, "Random");
+                break;
+            case PREF_T_TYPE:
+                transitionTypes = sharedPreferences.getString(PREF_T_TYPE, "Random");
+                break;
+            case PREF_T_SPEED:
+                orbitSpeed = sharedPreferences.getString(PREF_T_SPEED, "Random");
                 break;
 
             default: break;
