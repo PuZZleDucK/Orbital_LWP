@@ -36,7 +36,22 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
         getPreferenceManager().setSharedPreferencesName(OrbitalLiveWallpaper.SHARED_PREFS_NAME);
         addPreferencesFromResource(R.xml.orbital_lwp_settings);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setDefaultPrefs(this);
+    }
+
+    public static void setDefaultValues() {
+        dotColor = "Random";
+        orbitCount = "Random";
+        orbitSpeed = "Random";
+        dotSize = "Random";
+        transitionType = "Random";
+        orbitType = "Random";
+        orbitDirection = "Random";
+
+    }
+
+    protected void setDefaultPrefs(OrbitalLiveWallpaperSettings olwps) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(olwps);
 //        cycleOrbitType = sharedPreferences.getBoolean("orbit_pattern_cycle_on", true);
         dotColor = sharedPreferences.getString("orbit_color_cycle_on", "Random");
         orbitCount = sharedPreferences.getString("orbit_count_cycle_on", "Random");
@@ -46,7 +61,7 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
         orbitType = sharedPreferences.getString("fixed_orbit_type", "Random");
         transitionType = sharedPreferences.getString("fixed_transitions", "Random");
 
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(olwps);
     }
 
     @Override 

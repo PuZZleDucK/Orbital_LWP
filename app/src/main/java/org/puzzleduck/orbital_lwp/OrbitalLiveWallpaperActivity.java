@@ -14,9 +14,7 @@
 package org.puzzleduck.orbital_lwp;
 
 import android.app.Activity;
-import android.app.WallpaperManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -73,13 +71,13 @@ public class OrbitalLiveWallpaperActivity extends Activity implements OnClickLis
             Intent intent = new Intent();
             intent.setClass(this, OrbitalLiveWallpaperSettings.class);
             startActivity(intent);
-        }//if apps button
+        }//if cfg button
 
         if(v.getId() == R.id.configWallpaperButton)
         {
             Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER );
             startActivity(intent);
-        }//if apps button
+        }//if wallpaper button
 
 	}
     

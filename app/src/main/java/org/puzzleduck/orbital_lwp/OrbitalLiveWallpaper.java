@@ -7,8 +7,6 @@
  *	modify it under the terms of the GNU General Public License version
  *	3 as published by the Free Software Foundation.
  *
- * This live wallpaper was originally based on the target live wallpaper by PuZZleDucK
- *
  */
 
 package org.puzzleduck.orbital_lwp;
@@ -20,12 +18,17 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.service.wallpaper.WallpaperService;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
 import java.util.Random;
+
+/**
+ * OrbitalLiveWallpaper provides a nice live wallpaper bases on the circle, trefoil knot and windows 8 loading icon.
+ */
 
 public class OrbitalLiveWallpaper extends WallpaperService {
 
@@ -108,6 +111,7 @@ public class OrbitalLiveWallpaper extends WallpaperService {
     private static int currentTransBack = TRANS_NO_TRANS;//spin back from outside
     private float now = 0;
     private float orbitSpeed = 0.1f;
+    private Random rng = new Random();
 
 	@Override
     public Engine onCreateEngine() {
@@ -124,7 +128,6 @@ public class OrbitalLiveWallpaper extends WallpaperService {
             }
         };
         private boolean mVisible;
-		private Random rng = new Random();
 
         TargetEngine() {
             mPaint.setAntiAlias(true);
@@ -140,14 +143,19 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 
 		    setWindowProperties();
 			rng.setSeed(SystemClock.elapsedRealtime());
+            if(OrbitalLiveWallpaperSettings.dotColor == null) {
+                OrbitalLiveWallpaperSettings.setDefaultValues();
+            }
         }
 
 		private void setWindowProperties()
 		{
             WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
-            width = display.getWidth();
-            height = display.getHeight();
+            DisplayMetrics dm = new DisplayMetrics();
+            display.getMetrics(dm);
+            width = dm.widthPixels;
+            height = dm.heightPixels;
             mTouchX =  width/2;
             mTouchY = height/2;
 			offScreenRadius = Math.max(width, height);
@@ -175,19 +183,12 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         @Override
         public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             super.onSurfaceChanged(holder, format, width, height);
-
-			//float temp = mTouchX;
-			//mTouchX = mTouchY;
-			//mTouchY = temp;
             drawFrame();
-			
-			
         }
 
         @Override
         public void onSurfaceCreated(SurfaceHolder holder) {
             super.onSurfaceCreated(holder);
-	
         }
 
         @Override
@@ -200,9 +201,6 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         @Override
         public void onOffsetsChanged(float xOffset, float yOffset,
                 float xStep, float yStep, int xPixels, int yPixels) {
-		 //  setWindowProperties();
-		 // check for layout change First
-		// Rect surfaceRect = this.getSurfaceHolder().getSurfaceFrame();
             drawFrame();
         }
 
@@ -299,70 +297,17 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         }
         
 
-
         void drawOrbital(Canvas c) 
         {
 			if(DEBUG)
 			{
-				mPaint.setTextSize(24);
-				mPaint.setColor(Color.WHITE);
-				c.drawText("debug now; " + now, 30, height - 460, mPaint);
-				c.drawText("      Trans away: " + transitionNames[currentTransAway +1], 30,height-430,mPaint);
-				c.drawText("      Trans back: " + transitionNames[currentTransBack +1], 30,height-400,mPaint);
-				
-				c.drawText("      Radius : " + orbitRadius, 30,height-380,mPaint);
-				c.drawText("      Default: " + defaultRadius, 30,height-360,mPaint);
-				
-				c.drawText("      a.o > d: " + (Math.abs(orbitRadius) > defaultRadius), 30,height-330,mPaint);
-				c.drawText("      a.o < d: " + (Math.abs(orbitRadius) < defaultRadius) , 30,height-300,mPaint);
-				
-
-				c.drawText("      orbit: " + indexToType(orbitTypeIndex) + "("+orbitTypeIndex+")" , 30,height-270,mPaint);
-				c.drawText("      speed: " +  orbitSpeed, 30,height-240,mPaint);
-				c.drawText("      count: " +  setCount +"/"+trailCount, 30,height-210,mPaint);
-				c.drawText("      offset 1: " +  offset, 30,height-180,mPaint);
-				
-				mPaint.setARGB(255,255,0,0);
-				c.drawLine(mTouchX,mTouchY,mTouchX+(300f*(float)Math.sin(offset)),mTouchY+(300f*(float)Math.cos(offset)),mPaint);
-				c.drawLine(mTouchX,mTouchY,mTouchX+(300f*(float)Math.sin(now)),mTouchY+(300f*(float)Math.cos(now)),mPaint);
-				
+                drawDebug(c, mPaint);
 			}
 
 			dotColor = 0;
 
-			if(orbitRadius <= 0 && currentTransAway == TRANS_SPIN_IN)
-			{
-				triggerNewTransitionBack();
-			}// rad = 0 or off;
-			
-			if(orbitRadius > offScreenRadius && currentTransAway == TRANS_SPIN_OUT)
-			{
-				triggerNewTransitionBack();
-			}// rad = 0 or off;
-			
-			if(currentTransAway == TRANS_SPIN_OUT)
-			{
-				orbitRadius += fastSpeed;
-				orbitDiameter = orbitRadius*2;
-			}
-
-			if(currentTransAway == TRANS_SPIN_IN)
-			{
-				orbitRadius -= slowSpeed;
-				orbitDiameter = orbitRadius*2;
-			}
-			
-			if(currentTransBack == TRANS_SPIN_OUT)
-			{
-				orbitRadius += slowSpeed ;
-				orbitDiameter = orbitRadius*2;
-			}
-
-			if(currentTransBack == TRANS_SPIN_IN)
-			{
-				orbitRadius -= fastSpeed ;
-				orbitDiameter = orbitRadius*2;
-			}
+            adjustRadius();
+//            triggerTransitions();
 
 			if( (Math.abs(orbitRadius) > offScreenRadius) && (currentTransAway == TRANS_SPIN_OUT) ) //inTransition)
 			{
@@ -524,47 +469,100 @@ public class OrbitalLiveWallpaper extends WallpaperService {
 		private void offscreenSetNewOrbit()
 		{
 			currentTransAway = TRANS_NO_TRANS;
-
-			if(OrbitalLiveWallpaperSettings.orbitType.equals("Random")) {
-				orbitTypeIndex = rng.nextInt(orbitNames.length-1);
-//				orbitType = orbitNames[orbitTypeIndex];
-			} else {
-//				orbitType = OrbitalLiveWallpaperSettings.orbitType;
-				orbitTypeIndex = typeToIndex(OrbitalLiveWallpaperSettings.orbitType);
-			}
-            switch(OrbitalLiveWallpaperSettings.orbitCount){
-                case "Random":
-                    trailCount = orbitalCounts[orbitTypeIndex][rng.nextInt(2)+1];
-                    break;
-                case "Few":
-                    trailCount = orbitalCounts[orbitTypeIndex][0];
-                    break;
-                case "Medium":
-                    trailCount = orbitalCounts[orbitTypeIndex][1];
-                    break;
-                case "Many":
-                    trailCount = orbitalCounts[orbitTypeIndex][2];
-                    break;
-                default:
-                    break;
-            }
-			if(OrbitalLiveWallpaperSettings.orbitSpeed.equals("Random")) {
-				speedIndex = rng.nextInt(2)+1;
-				orbitSpeed = orbitSpeeds[orbitTypeIndex][speedIndex] ;
-			}
-			if(OrbitalLiveWallpaperSettings.dotSize.equals("Random")) {
-				dotSize = dotSizes[orbitTypeIndex][rng.nextInt(2)+1];
-			}
-            if(OrbitalLiveWallpaperSettings.dotColor.equals("Random")) {
-                currentScheme = rng.nextInt(colorSchemes.length-1)+1;
-            }
+			updateOrbitType();
+            updateDotCount();
+            updateOrbitSpeed();
+            updateDotSize();
+            updateDotColor();
 
 			now = 0;//removed for continue//replaced for reliability
 			orbitalCompression = 0.125f;
 		}//setup new orbit
-        
+
+
+        private void adjustRadius() {
+            if(orbitRadius <= 0 && currentTransAway == TRANS_SPIN_IN) {
+                triggerNewTransitionBack();
+            }// rad = 0 or off;
+
+            if(orbitRadius > offScreenRadius && currentTransAway == TRANS_SPIN_OUT) {
+                triggerNewTransitionBack();
+            }// rad = 0 or off;
+
+            if(currentTransAway == TRANS_SPIN_OUT) {
+                orbitRadius += fastSpeed;
+                orbitDiameter = orbitRadius*2;
+            }
+
+            if(currentTransAway == TRANS_SPIN_IN) {
+                orbitRadius -= slowSpeed;
+                orbitDiameter = orbitRadius*2;
+            }
+
+            if(currentTransBack == TRANS_SPIN_OUT) {
+                orbitRadius += slowSpeed ;
+                orbitDiameter = orbitRadius*2;
+            }
+
+            if(currentTransBack == TRANS_SPIN_IN) {
+                orbitRadius -= fastSpeed ;
+                orbitDiameter = orbitRadius*2;
+            }
+        }
+
     }//class TargetEngine
 
+
+    private void updateOrbitType() {
+        if(OrbitalLiveWallpaperSettings.orbitType.equals("Random")) {
+            orbitTypeIndex = rng.nextInt(orbitNames.length-1);
+//				orbitType = orbitNames[orbitTypeIndex];
+        } else {
+//				orbitType = OrbitalLiveWallpaperSettings.orbitType;
+            orbitTypeIndex = typeToIndex(OrbitalLiveWallpaperSettings.orbitType);
+        }
+    }
+    private void updateDotCount() {
+        switch(OrbitalLiveWallpaperSettings.orbitCount){
+            case "Random":
+                trailCount = orbitalCounts[orbitTypeIndex][rng.nextInt(2)+1];
+                break;
+            case "Few":
+                trailCount = orbitalCounts[orbitTypeIndex][0];
+                break;
+            case "Medium":
+                trailCount = orbitalCounts[orbitTypeIndex][1];
+                break;
+            case "Many":
+                trailCount = orbitalCounts[orbitTypeIndex][2];
+                break;
+            default:
+                break;
+        }
+    }
+    private void updateOrbitSpeed() {
+        if(OrbitalLiveWallpaperSettings.orbitSpeed.equals("Random")) {
+            speedIndex = rng.nextInt(2)+1;
+            orbitSpeed = orbitSpeeds[orbitTypeIndex][speedIndex] ;
+        }
+    }
+    private void updateDotSize() {
+        if(OrbitalLiveWallpaperSettings.dotSize.equals("Random")) {
+            dotSize = dotSizes[orbitTypeIndex][rng.nextInt(2)+1];
+        }
+    }
+    private void updateDotColor() {
+        if(OrbitalLiveWallpaperSettings.dotColor.equals("Random")) {
+            currentScheme = rng.nextInt(colorSchemes.length-1)+1;
+        }
+    }
+
+
+    /**
+     * Convert the given String representation into its corresponding int index or 0 otherwise..
+     * @param orbit String representation of orbit.
+     * @return corresponding int value or 0 otherwise.
+     */
     private static int typeToIndex(String orbit) {
         int value = 0;
         switch (orbit){
@@ -578,6 +576,11 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         return value;
     }
 
+    /**
+     * Convert the given int into its String representation.
+     * @param orbit index of orbit
+     * @return String representation
+     */
     private static String indexToType(int orbit) {
         String value = "";
         switch (orbit){
@@ -590,5 +593,30 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         }
         return value;
     }
+
+    private void drawDebug(Canvas c, Paint mPaint) {
+        mPaint.setTextSize(24);
+        mPaint.setColor(Color.WHITE);
+        c.drawText("debug now; " + now, 30, height - 460, mPaint);
+        c.drawText("      Trans away: " + transitionNames[currentTransAway +1], 30,height-430,mPaint);
+        c.drawText("      Trans back: " + transitionNames[currentTransBack +1], 30,height-400,mPaint);
+
+        c.drawText("      Radius : " + orbitRadius, 30,height-380,mPaint);
+        c.drawText("      Default: " + defaultRadius, 30,height-360,mPaint);
+
+        c.drawText("      a.o > d: " + (Math.abs(orbitRadius) > defaultRadius), 30,height-330,mPaint);
+        c.drawText("      a.o < d: " + (Math.abs(orbitRadius) < defaultRadius) , 30,height-300,mPaint);
+
+
+        c.drawText("      orbit: " + indexToType(orbitTypeIndex) + "("+orbitTypeIndex+")" , 30,height-270,mPaint);
+        c.drawText("      speed: " +  orbitSpeed, 30,height-240,mPaint);
+        c.drawText("      count: " +  setCount +"/"+trailCount, 30,height-210,mPaint);
+        c.drawText("      offset 1: " +  offset, 30,height-180,mPaint);
+
+        mPaint.setARGB(255,255,0,0);
+        c.drawLine(mTouchX,mTouchY,mTouchX+(300f*(float)Math.sin(offset)),mTouchY+(300f*(float)Math.cos(offset)),mPaint);
+        c.drawLine(mTouchX,mTouchY,mTouchX+(300f*(float)Math.sin(now)),mTouchY+(300f*(float)Math.cos(now)),mPaint);
+    }
+
 
 }//class OrbitalLiveWallpaper
