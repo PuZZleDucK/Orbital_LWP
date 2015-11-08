@@ -167,7 +167,6 @@ public class OrbitalLiveWallpaper extends WallpaperService {
         public void onVisibilityChanged(boolean visible) {
             mVisible = visible;
             if (visible) {
-
                 drawFrame();
             } else {
                 mHandler.removeCallbacks(mDrawCube);

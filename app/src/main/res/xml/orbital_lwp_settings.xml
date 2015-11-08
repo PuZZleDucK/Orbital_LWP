@@ -14,39 +14,39 @@
 
 <PreferenceScreen 
     android:key="orbital_wallpaper_settings" 
-    android:title="settings_title"
+    android:title="@string/settings_title"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory 
         android:key="orbit_category"
-        android:title="Orbit Preferences"
-        android:summary="Orbit Preferences summary">
+        android:title="@string/orbit_category"
+        android:summary="@string/orbit_category_summary">
 
 
 
         <ListPreference
             android:key="orbit_type"
-            android:title="ListPreference title"
-            android:summary="ListPreference summary"
+            android:title="@string/orbit_type"
+            android:summary="@string/orbit_type_summary"
             android:entries="@array/orbit_types"
             android:entryValues="@array/orbit_types_values" />
 
 
         <ListPreference
             android:key="orbit_speed"
-            android:title="speed selector title"
-            android:summary="speed summary"
+            android:title="@string/orbit_speed"
+            android:summary="@string/orbit_speed_summary"
             android:entries="@array/speed_types"
             android:entryValues="@array/speed_types_values"
-            android:defaultValue="" />
+            android:defaultValue="Random" />
 
         <ListPreference
             android:key="orbit_direction"
-            android:title="direction selector title"
-            android:summary="direction summary"
+            android:title="@string/orbit_direction"
+            android:summary="@string/orbit_direction_summary"
             android:entries="@array/direction_types"
             android:entryValues="@array/direction_types_values"
-            android:defaultValue="" />
+            android:defaultValue="Random" />
 
     </PreferenceCategory>
 
@@ -54,34 +54,34 @@
 
     <PreferenceCategory
         android:key="dot_category"
-        android:title="Dot Preferences"
-        android:summary="Dot Preferences summary">
+        android:title="@string/dot_category"
+        android:summary="@string/dot_category_summary">
 
 
         <ListPreference
             android:key="dot_color"
-            android:title="color selector title"
-            android:summary="color summary"
+            android:title="@string/dot_color"
+            android:summary="@string/dot_color_summary"
             android:entries="@array/color_types"
             android:entryValues="@array/color_types_values"
-            android:defaultValue="" />
+            android:defaultValue="Random" />
 
 
         <ListPreference
             android:key="dot_size"
-            android:title="size selector title"
-            android:summary="size summary"
+            android:title="@string/dot_size"
+            android:summary="@string/dot_size_summary"
             android:entries="@array/size_types"
             android:entryValues="@array/size_types_values"
-            android:defaultValue="" />
+            android:defaultValue="Random" />
 
         <ListPreference
             android:key="dot_count"
-            android:title="count selector title"
-            android:summary="count summary"
+            android:title="@string/dot_count"
+            android:summary="@string/dot_count_summary"
             android:entries="@array/count_types"
             android:entryValues="@array/count_types_values"
-            android:defaultValue="" />
+            android:defaultValue="Random" />
 
     </PreferenceCategory>
 
@@ -90,24 +90,24 @@
 
     <PreferenceCategory
         android:key="transition_category"
-        android:title="Transition Preferences"
-        android:summary="Transition Preferences summary">
+        android:title="@string/transition_category"
+        android:summary="@string/transition_category_summary">
 
         <ListPreference
             android:key="transition_types"
-            android:title="transition selector title"
-            android:summary="transition summary"
+            android:title="@string/transition_types"
+            android:summary="@string/transition_types_summary"
             android:entries="@array/transition_types"
             android:entryValues="@array/transition_types_values"
-            android:defaultValue="" />
+            android:defaultValue="Random" />
 
         <ListPreference
             android:key="transition_speeds"
-            android:title="transition speed selector title"
-            android:summary="transition speed summary"
+            android:title="@string/transition_speeds"
+            android:summary="@string/transition_speeds_summary"
             android:entries="@array/transition_speed_types"
             android:entryValues="@array/transition_speed_types_values"
-            android:defaultValue="" />
+            android:defaultValue="Random" />
 
     </PreferenceCategory>
 

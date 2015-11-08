@@ -44,9 +44,9 @@ public class OrbitalLiveWallpaperActivity extends Activity implements OnClickLis
         {
           Intent intent = new Intent(Intent.ACTION_SEND);
           intent.setType("plain/text");
-          intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"puzzleduck+orbitalLWP@gmail.com"});
-          intent.putExtra(Intent.EXTRA_SUBJECT, "User feedback for Orbital Live Wallpaper: ");
-          intent = Intent.createChooser(intent, "Thank you for your feedback, please select an app:");
+          intent.putExtra(Intent.EXTRA_EMAIL, new String[]{getString(R.string.feedback_email)});
+          intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_email_subject));
+          intent = Intent.createChooser(intent, getString(R.string.feedback_pick_email_prompt));
         	startActivity(intent);
         }//if contact button
 
@@ -54,7 +54,7 @@ public class OrbitalLiveWallpaperActivity extends Activity implements OnClickLis
         if(v.getId() == R.id.appsButton)
         {
         	Intent intent = new Intent(Intent.ACTION_VIEW);
-        	intent.setData(Uri.parse("market://search?q=PuZZleDucK Industries"));
+        	intent.setData(Uri.parse(getString(R.string.search_apps_uri)));
         	startActivity(intent);
         }//if apps button
 
@@ -62,7 +62,7 @@ public class OrbitalLiveWallpaperActivity extends Activity implements OnClickLis
         if(v.getId() == R.id.githubButton)
         {
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://github.com/PuZZleDucK/Orbital-Live-Wallpaper"));
+            intent.setData(Uri.parse(getString(R.string.source_url)));
             startActivity(intent);
         }//if apps button
 
