@@ -13,38 +13,33 @@
 
     <string name="action_settings">Settings</string>
 
-    <string name="pref_syncConnectionTypes_default">Chasing</string>
-    <string name="settings_title">settings_title</string>
+    <string name="settings_title">Orbital Live Wallpaper Preferences</string>
     <string name="orbit_category">Orbit Preferences</string>
     <string name="orbit_category_summary">Orbit Preferences summary</string>
-    <string name="orbit_type">ListPreference title</string>
-    <string name="orbit_type_summary">ListPreference summary</string>
-    <string name="orbit_speed">speed selector title</string>
-    <string name="orbit_speed_summary">speed summary</string>
-    <string name="orbit_direction">direction selector title</string>
-    <string name="orbit_direction_summary">direction summary</string>
+    <string name="orbit_type">Orbit Type</string>
+    <string name="orbit_type_summary">%s</string>
+    <string name="orbit_speed">Orbit Speed</string>
+    <string name="orbit_speed_summary">%s</string>
+    <string name="orbit_direction">Orbit Direction</string>
+    <string name="orbit_direction_summary">%s</string>
     <string name="dot_category">Dot Preferences</string>
     <string name="dot_category_summary">Dot Preferences summary</string>
-    <string name="dot_color">color selector title</string>
-    <string name="dot_color_summary">color summary</string>
-    <string name="dot_size">size selector title</string>
-    <string name="dot_size_summary">size summary</string>
-    <string name="dot_count">count selector title</string>
-    <string name="dot_count_summary">count summary</string>
+    <string name="dot_color">Dot Colors</string>
+    <string name="dot_color_summary">%s</string>
+    <string name="dot_size">Dot Size</string>
+    <string name="dot_size_summary">%s</string>
+    <string name="dot_count">Dot Count</string>
+    <string name="dot_count_summary">%s</string>
     <string name="transition_category">Transition Preferences</string>
     <string name="transition_category_summary">Transition Preferences summary</string>
-    <string name="transition_types">transition selector title</string>
-    <string name="transition_types_summary">transition summary</string>
-    <string name="transition_speeds">transition speed selector title</string>
-    <string name="transition_speeds_summary">transition speed summary</string>
-
+    <string name="transition_types">Transition Type</string>
+    <string name="transition_types_summary">%s</string>
+    <string name="transition_speeds">Transition Speed</string>
+    <string name="transition_speeds_summary">%s</string>
 
     <string name="feedback_email">puzzleduck+orbitalLWP@gmail.com</string>
     <string name="feedback_email_subject">"User feedback for Orbital Live Wallpaper: "</string>
     <string name="feedback_pick_email_prompt">Thank you for your feedback, please select an app:</string>
     <string name="search_apps_uri">market://search?q=PuZZleDucK Industries</string>
     <string name="source_url">https://github.com/PuZZleDucK/Orbital-Live-Wallpaper</string>
-
-
-
 </resources>

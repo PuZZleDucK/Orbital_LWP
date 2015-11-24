@@ -18,9 +18,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static SharedPreferences sharedPreferences;
     protected static String orbitType;
     protected static String orbitSpeed;
     protected static String orbitDirection;
@@ -42,15 +44,16 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
     @Override
     protected void onCreate(Bundle newBundle) {
         super.onCreate(newBundle);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         getPreferenceManager().setSharedPreferencesName(OrbitalLiveWallpaper.SHARED_PREFS_NAME);
         addPreferencesFromResource(R.xml.orbital_lwp_settings);
 
-        setDefaultPrefs(this);
+        Log.d("OLP", "Prefs create");
+        setDefaultPrefHandler();
     }
 
     public static void setDefaultValues(Context targetEngine) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(targetEngine);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(targetEngine);
         orbitType = sharedPreferences.getString(PREF_O_TYPE, "Random");
         orbitSpeed = sharedPreferences.getString(PREF_O_SPEED, "Random");
         orbitDirection = sharedPreferences.getString(PREF_O_DIR, "Random");
@@ -61,22 +64,11 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
         transitionSpeeds = sharedPreferences.getString(PREF_T_SPEED, "Random");
     }
 
-
-    protected void setDefaultPrefs(OrbitalLiveWallpaperSettings olwps) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(olwps);
-        orbitType = sharedPreferences.getString(PREF_O_TYPE, "Random");
-        orbitSpeed = sharedPreferences.getString(PREF_O_SPEED, "Random");
-        orbitDirection = sharedPreferences.getString(PREF_O_DIR, "Random");
-        dotColor = sharedPreferences.getString(PREF_D_COLOR, "Random");
-        dotSize = sharedPreferences.getString(PREF_D_SIZE, "Random");
-        orbitCount = sharedPreferences.getString(PREF_D_COUNT, "Random");
-        transitionTypes = sharedPreferences.getString(PREF_T_TYPE, "Random");
-        transitionSpeeds = sharedPreferences.getString(PREF_T_SPEED, "Random");
-
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(olwps);
+    protected void setDefaultPrefHandler() { //OrbitalLiveWallpaperSettings olwps
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
-    @Override 
+    @Override
     protected void onResume() {
         super.onResume();
     }
@@ -113,12 +105,8 @@ public class OrbitalLiveWallpaperSettings extends PreferenceActivity implements 
             case PREF_T_SPEED:
                 transitionSpeeds = sharedPreferences.getString(PREF_T_SPEED, "Random");
                 break;
-
             default: break;
         }
-
-    	
     }
-    
-    
+
 }
